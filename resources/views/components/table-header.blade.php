@@ -1,4 +1,4 @@
-@props(['resource', 'hasModal', 'link','title'=> false])
+@props(['resource', 'hasModal', 'customMsg', 'link','title'=> null, "modalId"])
 
 <div class="table-header-menu">
     <div class="header-text">
@@ -6,9 +6,9 @@
     </div>
     <div class="headerBtn">
         @if ($hasModal)
-            <button data-toggle="modal" data-target="#{{ $resource }}Modal" class="btn btn-primary btn-sm">Add New {{ $resource }} <i class="fa fa-plus"></i></button>
+            <button data-toggle="modal" data-target="#{{ $modalId ?? $resource }}Modal" class="btn btn-primary btn-sm"> {{ $customMsg ?? "Add New $resource" }} <i class="fa fa-plus"></i></button>
         @else
-            <a href="{{ $link ?? '' }}" class="btn btn-primary btn-sm">Add New {{ $resource }}</a>
+            <a href="{{ route($link) ?? '' }}" class="btn btn-primary btn-sm">{{ $customMsg ?? "Add New $resource" }}</a>
         @endif
 
     </div>
