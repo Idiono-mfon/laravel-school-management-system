@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Dashboard;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\ClassArm as ModelClassArm;
+use App\Models\ClassArm;
 use Illuminate\Support\Facades\Validator;
 
-class ClassArm extends Controller
+// ClassArmController
+
+class ClassArmController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +19,7 @@ class ClassArm extends Controller
     public function index()
     {
         // Add Pagination here latter
-        $arms = ModelClassArm::all();
+        $arms = ClassArm::all();
 
         return view('dashboard.class_arm', ["arms" =>  $arms]);
     }
@@ -48,7 +50,7 @@ class ClassArm extends Controller
             return back()->with('error', 'Field cannot be empty');
         }
 
-        ModelClassArm::create($request->all());
+        ClassArm::create($request->all());
 
         return back()->with("success", "Class Arm added successfully");
     }
@@ -62,7 +64,7 @@ class ClassArm extends Controller
      */
     public function edit($id)
     {
-        $query = ModelClassArm::where("id", $id);
+        $query = ClassArm::where("id", $id);
 
         if ($query->exists()) {
             $class_arm = $query->first();
@@ -70,7 +72,7 @@ class ClassArm extends Controller
             session(["edit_modal" => true]);
             // Retrieve all arms too to render table again
             // Add Pagination latter
-            $arms = ModelClassArm::all();
+            $arms = ClassArm::all();
 
             return view("dashboard.class_arm", ["class_arm" => $class_arm, "arms" => $arms]);
         }
@@ -94,7 +96,7 @@ class ClassArm extends Controller
             return back()->with("error", "Error occured while updating class arm");
         }
 
-        $query = ModelClassArm::where('id', $id);
+        $query = ClassArm::where('id', $id);
 
         if ($query->exists()) {
             // check where
@@ -115,7 +117,7 @@ class ClassArm extends Controller
      */
     public function destroy($id)
     {
-        $query = ModelClassArm::where('id', $id);
+        $query = ClassArm::where('id', $id);
         if ($query->exists()) {
             $query->delete();
             return back()->with('success', 'Class Arm deleted successfully');

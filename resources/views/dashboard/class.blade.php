@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-    $link = session("edit_modal") ? 'class_arm.create': null;
+    $link = session("edit_modal") ? 'classes.create': null;
     $hasModal = session("edit_modal") ? false: true;
 @endphp
 
@@ -12,11 +12,11 @@
 
     <div class="row layout-top-spacing">
         <x-table-header
-            :title="'Manage Class Arms'"
-            :modalId="'classArm'"
+            :title="'Manage All Classes'"
+            :modalId="'classes'"
             :link="$link"
             :hasModal="$hasModal"
-            :resource="'Class Arm'"/>
+            :resource="'Class'"/>
 
         <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
             <div class="widget-content widget-content-area br-6 table-responsive">
@@ -24,27 +24,30 @@
                     <thead>
                         <tr>
                             <th>S/N</th>
-                            <th>Arm Name</th>
+                            <th>Class Name</th>
+                            <th>Class Arm</th>
                             <th>Date Created</th>
                             <th colspan="2" class="text-center dt-no-sorting">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($arms as $arm)
+                        @forelse ($classes as $class)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $arm->arm_name }}</td>
-                                <td>{{ $arm->created_at->toRfc7231String() }}</td>
-                               <x-action-component :id="$arm->id" :deleteRoute="'class_arm.delete'" :editRoute="'class_arm.edit'"/>
+                                <td>{{ $class->iteration }}</td>
+                                <td>{{ $class->class_name }}</td>
+                                <td>{{ $class->class_arm }}</td>
+                                <td>{{ $class->created_at->toRfc7231String() }}</td>
+                               <x-action-component :id="$class->id" :deleteRoute="'classes.delete'" :editRoute="'classes.edit'"/>
                             </tr>
                         @empty
-                           <x-no-record :size="5" :resource="'Class Arm'"/>
+                           <x-no-record :size="6" :resource="'Class'"/>
                         @endforelse
                     </tbody>
                     <tfoot>
                         <tr>
                             <th>S/N</th>
-                            <th>Arm Name</th>
+                            <th>Class Name</th>
+                            <th>Class Arm</th>
                             <th>Date Created</th>
                             <th colspan="2" class="text-center dt-no-sorting">Action</th>
                         </tr>
@@ -58,15 +61,15 @@
 </div>
 
 <!-- Class Arm Modal -->
-<div class="modal  fade" id="classArmModal" tabindex="-1" role="dialog" aria-labelledby="sessionModal" aria-hidden="true">
+<div class="modal  fade" id="classes" tabindex="-1" role="dialog" aria-labelledby="classModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="sessionModal">{{ session("edit_modal") ? "Edit Class Arm" : "Add A Class Arm" }}</h5>
+                <h5 class="modal-title" id="classModal">{{ session("edit_modal") ? "Edit Class" : "Register A New Class" }}</h5>
             </div>
             <div class="modal-body">
 
-                <form method="POST" action="{{ session("edit_modal") ? route('class_arm.update', $class_arm->id ?? 0) : route('class_arm') }}">
+                <form method="POST" action="{{ session("edit_modal") ? route('classes.update', $class->id ?? 0) : route('classes') }}">
                     @csrf
 
                     @if (session("edit_modal"))
@@ -74,9 +77,24 @@
                     @endif
 
                     <div class="form-group mb-4">
-                        <label for="class-name">Class Arm</label>
-                          <input type="text"
-                            class="form-control" value="{{ isset($class_arm) ? $class_arm->arm_name : "" }}" name="arm_name" id="class-name" aria-describedby="helpId" placeholder="Class Arm Name">
+                        <label for="class-name">Class Name</label>
+                        <input type="text"
+                        class="form-control" value="{{ isset($class) ? $class->class_name : "" }}" name="class_name" id="class-name" aria-describedby="helpId" placeholder="Class Name"/>
+                    </div>
+
+                    <div class="form-group mb-4">
+                      <label for="">Select Class Arm</label>
+                      <select class="form-control" name="class_arm" id="">
+                        @if (session("edit_modal"))
+                            @foreach ($arms as $arm )
+                                <option value="{{ $arm->id }}">{{ $arm->arm_name }}</option>
+                            @endforeach
+                        @else
+                            @foreach ($arms as $arm )
+                                <option {{ $arm->id === $class->class_arm_id ? 'selected':"" }} value="{{ $arm->id }}">{{ $arm->arm_name }}</option>
+                            @endforeach
+                        @endif
+                      </select>
                     </div>
 
                     <div class="mt-3">

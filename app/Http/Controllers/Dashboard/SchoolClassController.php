@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
+use App\Models\SchoolClass;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
-class SchoolClass extends Controller
+class SchoolClassController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +17,9 @@ class SchoolClass extends Controller
     public function index()
     {
         //
+        $classes = SchoolClass::all();
 
-        return view('dashboard.class');
+        return view('dashboard.class', ['classes' => $classes]);
     }
 
     /**
@@ -27,6 +30,9 @@ class SchoolClass extends Controller
     public function create()
     {
         //
+        session(["create_modal" => true]);
+
+        return redirect(route('classes'));
     }
 
     /**
@@ -37,18 +43,23 @@ class SchoolClass extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        //Add More Validation Here
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+        $validator = Validator::make($request->all(), [
+            "class_name" => "required",
+            "class_arm" => "required|exists:class_arms,id",
+        ]);
+
+        if ($validator->fails()) {
+            return back()->with("error", "Error occured during operation");
+        }
+
+        SchoolClass::create([
+            "class_name" => $request->input('class_name'),
+            "class_arm_id" => $request->input("class_arm")
+        ]);
+
+        return back()->with("success", "Class created successfully");
     }
 
     /**
@@ -59,7 +70,14 @@ class SchoolClass extends Controller
      */
     public function edit($id)
     {
-        //
+        $query = SchoolClass::where("id", $id);
+        if ($query->exists()) {
+            $class = $query->first();
+
+            session(["edit_modal" => true]);
+
+            // SchoolClas::with('')
+        }
     }
 
     /**

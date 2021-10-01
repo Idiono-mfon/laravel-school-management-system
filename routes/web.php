@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Dashboard\ClassArm;
+use App\Http\Controllers\Dashboard\ClassArmController;
 use App\Http\Controllers\Dashboard\ClassSubject;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -50,30 +51,33 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 
     /**Class Arm */
     Route::middleware(["clearEditModal", "clearCreateModal"])->group(function () {
-        Route::delete('class/arms/{id}', [ClassArm::class, 'destroy'])->name("class_arm.delete");
-        Route::post('class/arms', [ClassArm::class, 'store']);
+        Route::delete('class/arms/{id}', [ClassArmController::class, 'destroy'])->name("class_arm.delete");
+        Route::post('class/arms', [ClassArmController::class, 'store']);
     });
-    Route::get('class/arms', [ClassArm::class, 'index'])->name("class_arm");
-    Route::get('class/arms/create', [ClassArm::class, 'create'])->middleware("clearEditModal")->name('class_arm.create');
-    Route::get('class/arms/{id}/edit', [ClassArm::class, 'edit'])->name("class_arm.edit");
-    Route::patch('class/arms/{id}', [ClassArm::class, 'update'])->middleware("clearEditModal")->name("class_arm.update");
+    Route::get('class/arms', [ClassArmController::class, 'index'])->name("class_arm");
+    Route::get('class/arms/create', [ClassAClassArmController::class, 'edit'])->name("class_arm.edit");
+    Route::patch('class/arms/{id}', [ClassArmController::class, 'update'])->middleware("clearEditModal")->name("class_arm.update");
 
 
     /**Class */
-    Route::get('classes', [SchoolClass::class, 'index'])->name("classes");
-    Route::post('classes', [SchoolClass::class, 'store']);
-    Route::patch('classes/{id}', [SchoolClass::class, 'update'])->name("classes.store");
-    Route::delete('classes/{id}', [SchoolClass::class, 'destroy'])->name("classes.delete");
+    Route::middleware(["clearEditModal", "clearCreateModal"])->group(function () {
+        Route::delete('classes/{id}', [SchoolClassController::class, 'destroy'])->name("classes.delete");
+        Route::post('classes', [SchoolClassController::class, 'store']);
+    });
+    Route::get('classes', [SchoolClassController::class, 'index'])->name("classes");
+    Route::get("classes/create", [SchoolClassController::class, 'create'])->middleware("clearEditModal")->name('classes.create');
+    Route::get("classes/{id}/edit", [SchoolClassController::class, 'edit'])->name('classes.edit');
+    Route::patch('classes/{id}', [SchoolClassController::class, 'update'])->middleware("clearEditModal")->name("classes.update");
 
     /**Subject */
-    Route::get('subjects', [Subject::class, 'index'])->name("subjects");
-    Route::post('subjects', [Subject::class, 'store']);
-    Route::post('subjects/{id}', [Subject::class, 'update'])->name('subject.update');
-    Route::post('subjects/{id}', [Subject::class, 'destroy'])->name('subject.delete');
+    Route::get('subjects', [SubjectController::class, 'index'])->name("subjects");
+    Route::post('subjects', [SubjectController::class, 'store']);
+    Route::post('subjects/{id}', [SubjectController::class, 'update'])->name('subject.update');
+    Route::post('subjects/{id}', [SubjectController::class, 'destroy'])->name('subject.delete');
 
     /**Class Subject */
-    Route::get('classes/subjects', [ClassSubject::class, 'index'])->name('class_subjects');
-    Route::post('/classes/subjects', [ClassSubject::class, 'store']);
-    Route::delete('/classes/subjects', [ClassSubject::class, 'destroy'])->name('class_subject.delete');
+    Route::get('classes/subjects', [ClassSubjectController::class, 'index'])->name('class_subjects');
+    Route::post('/classes/subjects', [ClassSubjectController::class, 'store']);
+    Route::delete('/classes/subjects', [ClassSubjectController::class, 'destroy'])->name('class_subject.delete');
     // });
 });
